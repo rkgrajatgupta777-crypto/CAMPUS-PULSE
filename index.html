@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Pulse | Intelligent Student Hub</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%20%22100%22%20%22100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+            },
+            google: {
+              blue: '#4285F4',
+              red: '#EA4335',
+              yellow: '#FBBC05',
+              green: '#34A853',
+              dark: '#1e293b'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body
+  class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200 min-h-screen flex flex-col font-sans">
+
+  <!-- TOP ANNOUNCEMENT BANNER FOR TODAY'S URGENT MATTERS -->
+  <div id="urgentAlertBar"
+    class="hidden bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 text-white px-4 py-2.5 shadow-md relative z-50">
+    <div class="max-w-7xl mx-auto flex items-center justify-between text-sm font-medium">
+      <div class="flex items-center space-x-2">
+        <span class="flex h-2.5 w-2.5 relative">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
+        </span>
+        <span class="font-bold tracking-wide uppercase text-xs bg-black/25 px-2 py-0.5 rounded">Action Required
+          Today</span>
+        <span id="urgentAlertText" class="truncate max-w-xl md:max-w-3xl">You have urgent deadlines today!</span>
+      </div>
+      <button onclick="dismissUrgentBar()" class="p-1 hover:bg-white/20 rounded transition" title="Dismiss">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- NAVIGATION HEADER -->
+  <header
+    class="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+
+      <!-- Brand & Event Badge -->
+      <div class="flex items-center space-x-3">
+        <div
+          class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25">
+          <i data-lucide="zap" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-xl font-bold font-display tracking-tight text-slate-900 dark:text-white">Campus<span
+                class="text-indigo-600 dark:text-indigo-400">Pulse</span></h1>
+            <span
+              class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">PromptWars
+              CSSS</span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">AI-Powered Hub for WhatsApp Notices,
+            Deadlines & Events</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons in Nav -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <!-- AI Digest Quick Button -->
+        <button id="navDigestBtn" onclick="openDigestModal()"
+          class="relative group flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-medium text-xs sm:text-sm shadow-md shadow-orange-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]">
+          <i data-lucide="sparkles" class="w-4 h-4 animate-spin-slow"></i>
+          <span>What do I need to know this week?</span>
+        </button>
+
+        <!-- New Notice Button -->
+        <button onclick="scrollToInput()"
+          class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-medium transition shadow-sm">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span class="hidden md:inline">Paste Notice</span>
+        </button>
+
+        <!-- API Settings Button -->
+        <button onclick="openSettingsModal()"
+          class="p-2 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+          title="AI Settings">
+          <i data-lucide="settings" class="w-4 h-4"></i>
+        </button>
+
+        <!-- Dark Mode Toggle -->
+        <button id="themeToggleBtn" onclick="toggleTheme()"
+          class="p-2 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+          title="Toggle Dark/Light Mode">
+          <i id="themeIcon" data-lucide="moon" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+
+    <!-- HERO / OVERVIEW METRICS BAR -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+      <div
+        class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm flex items-center space-x-3.5">
+        <div class="p-2.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
+          <i data-lucide="inbox" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Tracked</div>
+          <div id="statTotal" class="text-xl font-bold font-display text-slate-900 dark:text-white">0</div>
+        </div>
+      </div>
+
+      <div
+        class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm flex items-center space-x-3.5">
+        <div class="p-2.5 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400">
+          <i data-lucide="flame" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">Due Today / Urgent</div>
+          <div id="statToday" class="text-xl font-bold font-display text-rose-600 dark:text-rose-400">0</div>
+        </div>
+      </div>
+
+      <div
+        class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm flex items-center space-x-3.5">
+        <div class="p-2.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
+          <i data-lucide="calendar" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">This Week</div>
+          <div id="statThisWeek" class="text-xl font-bold font-display text-indigo-600 dark:text-indigo-400">0</div>
+        </div>
+      </div>
+
+      <div
+        class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm flex items-center space-x-3.5">
+        <div class="p-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+          <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="text-xs text-slate-500 dark:text-slate-400 font-medium">Completed / Read</div>
+          <div id="statCompleted" class="text-xl font-bold font-display text-emerald-600 dark:text-emerald-400">0</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: SMART INPUT (AI Notice Extractor) -->
+    <section id="smartInputSection"
+      class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-sm relative overflow-hidden transition-all">
+      <div
+        class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-100 dark:border-slate-800/80">
+        <div class="flex items-center space-x-2.5">
+          <div
+            class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm">
+            1
+          </div>
+          <div>
+            <h2 class="text-lg font-bold font-display text-slate-900 dark:text-white flex items-center gap-2">
+              Smart Input Engine
+              <span
+                class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-400">
+                AI Ready
+              </span>
+            </h2>
+            <p class="text-xs text-slate-500 dark:text-slate-400">
+              Paste messy forwarded WhatsApp notices, emails, or club posters. AI extracts title, date, time, venue &
+              category into a clean card.
+            </p>
+          </div>
+        </div>
+
+        <!-- Sample Selector Chips -->
+        <div class="flex items-center flex-wrap gap-1.5 text-xs">
+          <span class="text-slate-400 text-[11px] font-medium mr-1">Quick Samples:</span>
+          <button onclick="loadSampleNotice('whatsapp_exam')" class="sample-chip">📝 Exam Notice</button>
+          <button onclick="loadSampleNotice('whatsapp_placement')" class="sample-chip">💼 Google Drive</button>
+          <button onclick="loadSampleNotice('whatsapp_hackathon')" class="sample-chip">⚡ Hackathon</button>
+          <button onclick="loadSampleNotice('whatsapp_assignment')" class="sample-chip">⏰ Deadline</button>
+        </div>
+      </div>
+
+      <!-- Input Form -->
+      <div class="mt-4 space-y-3">
+        <div class="relative">
+          <textarea id="rawNoticeInput" rows="4"
+            placeholder="Paste forwarded WhatsApp message, email notice, or poster caption here...&#10;e.g. '🚨 *URGENT - Internal Exam for CS301 postponed to Friday 3 PM at Audi 2. Bring Hall Tickets!*'"
+            class="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-950/60 p-3.5 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition resize-y font-mono leading-relaxed placeholder:font-sans placeholder:text-slate-400"></textarea>
+
+          <!-- Character & Status Counter -->
+          <div class="absolute bottom-3 right-3 flex items-center space-x-2">
+            <button onclick="clearInput()"
+              class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 px-2 py-0.5 rounded hover:bg-slate-200 dark:hover:bg-slate-800 transition">
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center space-x-2 text-xs text-slate-500 dark:text-slate-400">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
+            <span id="extractorModeLabel">Mode: Instant Local AI Engine (Heuristic NLP)</span>
+            <span class="text-slate-300 dark:text-slate-700">|</span>
+            <button onclick="openSettingsModal()" class="text-indigo-600 dark:text-indigo-400 hover:underline">
+              Switch to Gemini API
+            </button>
+          </div>
+
+          <div class="flex items-center space-x-2">
+            <button id="extractBtn" onclick="processNoticeInput()"
+              class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm flex items-center justify-center space-x-2 shadow-md shadow-indigo-600/20 transition hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50">
+              <i data-lucide="cpu" class="w-4 h-4"></i>
+              <span>Extract & Categorize</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXTRACTED PREVIEW MODAL / ACCORDION IF PENDING -->
+      <div id="extractionPreviewArea" class="hidden mt-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+        <!-- Rendered dynamically via JS -->
+      </div>
+    </section>
+
+    <!-- SECTION 2: CONTROLS (SEARCH, FILTERS, VIEW MODES) -->
+    <section class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+
+      <!-- Search Bar -->
+      <div class="relative flex-1 max-w-md">
+        <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+        <input type="text" id="searchInput" placeholder="Search by title, venue, keyword, tag..."
+          oninput="handleSearchFilterChange()"
+          class="w-full pl-9 pr-8 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition">
+        <button id="clearSearchBtn" onclick="clearSearch()"
+          class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Filters & View Mode -->
+      <div class="flex flex-wrap items-center gap-2">
+
+        <!-- Status Filter Dropdown -->
+        <div
+          class="flex items-center space-x-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-1 text-xs">
+          <span class="text-slate-400 px-2 font-medium">Status:</span>
+          <button onclick="setStatusFilter('all')" class="status-pill active" data-status="all">All</button>
+          <button onclick="setStatusFilter('today')" class="status-pill text-rose-600" data-status="today">Due
+            Today</button>
+          <button onclick="setStatusFilter('upcoming')" class="status-pill text-blue-600"
+            data-status="upcoming">Upcoming</button>
+          <button onclick="setStatusFilter('expired')" class="status-pill text-slate-500"
+            data-status="expired">Expired</button>
+        </div>
+
+        <!-- View Switcher -->
+        <div
+          class="flex items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-1">
+          <button onclick="setViewMode('cards')" id="viewModeCards" class="view-pill active" title="Grid View">
+            <i data-lucide="layout-grid" class="w-4 h-4"></i>
+          </button>
+          <button onclick="setViewMode('calendar')" id="viewModeCalendar" class="view-pill" title="Calendar View">
+            <i data-lucide="calendar-days" class="w-4 h-4"></i>
+          </button>
+          <button onclick="setViewMode('timeline')" id="viewModeTimeline" class="view-pill" title="Timeline View">
+            <i data-lucide="list-ordered" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Extra Tools (Export/Reset) -->
+        <div class="flex items-center space-x-1">
+          <button onclick="resetToDemoData()"
+            class="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+            title="Reset Demo Data">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          </button>
+          <button onclick="exportAllAsJson()"
+            class="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+            title="Export Notices as JSON">
+            <i data-lucide="download" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- CATEGORY PILLS FILTER BAR -->
+    <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
+      <button onclick="setCategoryFilter('all')" class="cat-pill active" data-category="all">
+        <span>All Notices</span>
+        <span id="badgeCatAll" class="cat-count">0</span>
+      </button>
+      <button onclick="setCategoryFilter('Academic')" class="cat-pill" data-category="Academic">
+        <span>🎓 Academic & Exams</span>
+        <span id="badgeCatAcademic" class="cat-count">0</span>
+      </button>
+      <button onclick="setCategoryFilter('Placement')" class="cat-pill" data-category="Placement">
+        <span>💼 Placements & Careers</span>
+        <span id="badgeCatPlacement" class="cat-count">0</span>
+      </button>
+      <button onclick="setCategoryFilter('Event')" class="cat-pill" data-category="Event">
+        <span>⚡ Clubs & Hackathons</span>
+        <span id="badgeCatEvent" class="cat-count">0</span>
+      </button>
+      <button onclick="setCategoryFilter('Deadline')" class="cat-pill" data-category="Deadline">
+        <span>⏰ Deadlines & Submissions</span>
+        <span id="badgeCatDeadline" class="cat-count">0</span>
+      </button>
+      <button onclick="setCategoryFilter('General')" class="cat-pill" data-category="General">
+        <span>📢 General Campus</span>
+        <span id="badgeCatGeneral" class="cat-count">0</span>
+      </button>
+    </div>
+
+    <!-- MAIN DISPLAY AREA (Cards Grid, Calendar, or Timeline) -->
+
+    <!-- VIEW 1: CARDS GRID VIEW -->
+    <div id="cardsViewContainer" class="space-y-4">
+      <div id="noticesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState"
+        class="hidden text-center py-16 px-4 bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-800">
+        <div
+          class="w-14 h-14 mx-auto rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-3">
+          <i data-lucide="search-x" class="w-7 h-7"></i>
+        </div>
+        <h3 class="text-base font-semibold text-slate-800 dark:text-slate-200">No campus notices found</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1">
+          Try adjusting your search or category filters, or paste a new WhatsApp message above!
+        </p>
+        <button onclick="resetFilters()"
+          class="mt-4 inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+          <span>Clear All Filters</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- VIEW 2: CALENDAR VIEW -->
+    <div id="calendarViewContainer"
+      class="hidden bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-4">
+      <!-- Calendar Navigation -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <h2 id="calendarMonthTitle" class="text-lg font-bold font-display text-slate-900 dark:text-white">October 2026
+          </h2>
+          <span class="text-xs text-slate-500 font-medium bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">Live
+            Campus Calendar</span>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <button onclick="prevCalendarMonth()"
+            class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300">
+            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+          </button>
+          <button onclick="goToCurrentMonth()"
+            class="px-2.5 py-1 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300">
+            Today
+          </button>
+          <button onclick="nextCalendarMonth()"
+            class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300">
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Calendar Days Grid -->
+      <div
+        class="grid grid-cols-7 gap-1 text-center font-medium text-xs text-slate-400 py-2 border-b border-slate-100 dark:border-slate-800">
+        <div>SUN</div>
+        <div>MON</div>
+        <div>TUE</div>
+        <div>WED</div>
+        <div>THU</div>
+        <div>FRI</div>
+        <div>SAT</div>
+      </div>
+      <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1 sm:gap-2">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Selected Day Event Inspector -->
+      <div id="calendarSelectedDayEvents" class="pt-4 border-t border-slate-100 dark:border-slate-800">
+        <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2"
+          id="calendarSelectedDayLabel">
+          Selected Day Events
+        </div>
+        <div id="calendarDayEventsList" class="space-y-2">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 3: TIMELINE VIEW -->
+    <div id="timelineViewContainer" class="hidden space-y-6">
+      <!-- Grouped by Today, Tomorrow, This Week, Upcoming, and Past -->
+      <div id="timelineContent" class="space-y-6">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- AI DIGEST MODAL ("What do I need to know this week?") -->
+  <div id="digestModal"
+    class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div
+      class="bg-white dark:bg-slate-900 rounded-2xl max-w-2xl w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+
+      <!-- Modal Header -->
+      <div
+        class="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 p-5 text-white flex items-center justify-between">
+        <div class="flex items-center space-x-2.5">
+          <div class="p-2 rounded-xl bg-white/20 backdrop-blur-md">
+            <i data-lucide="sparkles" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold font-display">Weekly Campus Pulse Digest</h3>
+            <p class="text-xs text-amber-100">AI-Synthesized briefing for your week</p>
+          </div>
+        </div>
+        <button onclick="closeDigestModal()" class="p-1.5 rounded-lg hover:bg-white/20 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Digest Body -->
+      <div class="p-5 sm:p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+        <div id="digestLoading" class="hidden py-10 text-center space-y-3">
+          <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-amber-500 border-t-transparent">
+          </div>
+          <p class="text-sm font-medium text-slate-600 dark:text-slate-300">Synthesizing all active notices, exams &
+            deadlines...</p>
+        </div>
+
+        <div id="digestOutput" class="space-y-4 text-sm leading-relaxed text-slate-700 dark:text-slate-200">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div
+        class="bg-slate-50 dark:bg-slate-950/60 p-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center space-x-2">
+          <!-- Text to Speech Button -->
+          <button id="ttsButton" onclick="toggleAudioDigest()"
+            class="px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 text-xs font-medium flex items-center space-x-1.5 transition">
+            <i id="ttsIcon" data-lucide="volume-2" class="w-4 h-4"></i>
+            <span id="ttsText">Read Aloud</span>
+          </button>
+          <!-- Copy to Clipboard -->
+          <button onclick="copyDigestText()"
+            class="px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 text-xs font-medium flex items-center space-x-1.5 transition">
+            <i data-lucide="copy" class="w-4 h-4"></i>
+            <span>Copy Digest</span>
+          </button>
+        </div>
+
+        <button onclick="closeDigestModal()"
+          class="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-medium transition">
+          Done
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- EDIT / CONFIRM CARD MODAL -->
+  <div id="editNoticeModal"
+    class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div
+      class="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div class="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+        <h3 id="editModalTitle" class="text-base font-bold font-display text-slate-900 dark:text-white">Edit Campus
+          Notice</h3>
+        <button onclick="closeEditModal()"
+          class="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <form id="editNoticeForm" onsubmit="saveNoticeEdit(event)" class="p-4 sm:p-5 space-y-3.5 text-xs sm:text-sm">
+        <input type="hidden" id="editNoticeId">
+
+        <div>
+          <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Title</label>
+          <input type="text" id="editFieldTitle" required
+            class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white outline-none focus:border-indigo-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Category</label>
+            <select id="editFieldCategory"
+              class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white outline-none focus:border-indigo-500">
+              <option value="Academic">Academic & Exams</option>
+              <option value="Placement">Placements & Careers</option>
+              <option value="Event">Clubs & Hackathons</option>
+              <option value="Deadline">Deadlines & Submissions</option>
+              <option value="General">General Campus</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Priority</label>
+            <select id="editFieldPriority"
+              class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white outline-none focus:border-indigo-500">
+              <option value="urgent">Urgent / Critical</option>
+              <option value="high">High Priority</option>
+              <option value="medium">Medium Priority</option>
+              <option value="low">Low Priority</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Date</label>
+            <input type="date" id="editFieldDate" required
+              class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white outline-none focus:border-indigo-500">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Time</label>
+            <input type="text" id="editFieldTime" placeholder="e.g. 10:00 AM"
+              class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white outline-none focus:border-indigo-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Venue / Location</label>
+          <input type="text" id="editFieldVenue" placeholder="e.g. Auditorium 2 / Online Google Meet"
+            class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white outline-none focus:border-indigo-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">Action Items /
+            Description</label>
+          <textarea id="editFieldDescription" rows="3"
+            class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white outline-none focus:border-indigo-500"></textarea>
+        </div>
+
+        <div class="pt-2 flex justify-end space-x-2">
+          <button type="button" onclick="closeEditModal()"
+            class="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 text-xs font-medium">Cancel</button>
+          <button type="submit"
+            class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium">Save
+            Notice</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL (Gemini API Configuration) -->
+  <div id="settingsModal"
+    class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div
+      class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-2xl p-5 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="bot" class="w-5 h-5 text-indigo-600"></i>
+          <h3 class="text-base font-bold font-display text-slate-900 dark:text-white">AI Engine Configuration</h3>
+        </div>
+        <button onclick="closeSettingsModal()"
+          class="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+        <p>
+          <strong>Campus Pulse</strong> supports two AI processing modes:
+        </p>
+
+        <div class="space-y-2">
+          <label
+            class="flex items-start space-x-2 p-2.5 rounded-xl border border-indigo-200 dark:border-indigo-900/60 bg-indigo-50/50 dark:bg-indigo-950/30 cursor-pointer">
+            <input type="radio" name="aiEngineMode" value="local" id="modeLocal" checked class="mt-0.5 text-indigo-600"
+              onchange="updateEngineModeUI()">
+            <div>
+              <span class="font-semibold text-slate-900 dark:text-white block">Offline Smart NLP Engine (Default)</span>
+              <span class="text-[11px] text-slate-500">100% offline, zero latency, regex & entity pattern matching for
+                dates, venues, priority, and categories. Perfect for hackathons!</span>
+            </div>
+          </label>
+
+          <label
+            class="flex items-start space-x-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/40 cursor-pointer">
+            <input type="radio" name="aiEngineMode" value="gemini" id="modeGemini" class="mt-0.5 text-indigo-600"
+              onchange="updateEngineModeUI()">
+            <div>
+              <span class="font-semibold text-slate-900 dark:text-white block">Google Gemini API (Live LLM)</span>
+              <span class="text-[11px] text-slate-500">Connect your Gemini 1.5/2.0 API Key for deep natural language
+                comprehension and advanced JSON extraction.</span>
+            </div>
+          </label>
+        </div>
+
+        <div id="geminiKeyArea" class="hidden space-y-1.5 pt-2">
+          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">Gemini API Key</label>
+          <input type="password" id="geminiApiKeyInput" placeholder="AIzaSy..."
+            class="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-xs outline-none">
+          <p class="text-[10px] text-slate-400">Your key is stored only in your browser's local storage.</p>
+        </div>
+      </div>
+
+      <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end space-x-2">
+        <button onclick="closeSettingsModal()"
+          class="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-medium">Cancel</button>
+        <button onclick="saveSettings()"
+          class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium">Save
+          Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2 pointer-events-none"></div>
+
+  <!-- FOOTER -->
+  <footer
+    class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center space-x-2">
+        <span class="font-semibold text-slate-800 dark:text-slate-200">Campus Pulse</span>
+        <span>•</span>
+        <span>PromptWars &times; CSSS | Build with AI</span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <span>Smart Natural Language Parsing</span>
+        <span>•</span>
+        <span>Calendar & Reminders</span>
+        <span>•</span>
+        <span>Client-Side LocalStorage</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- App Script -->
+  <script src="app.js"></script>
+  <script>
+    // Initialize Lucide icons on DOM loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+    });
+  </script>
+</body>
+
+</html>

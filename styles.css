@@ -1,0 +1,193 @@
+/* Custom CSS for Campus Pulse */
+
+@keyframes pulseSlow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.03); }
+}
+
+.animate-pulse-slow {
+  animation: pulseSlow 3s infinite ease-in-out;
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 8s linear infinite;
+}
+
+/* Sample selector chips */
+.sample-chip {
+  padding: 0.25rem 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  background-color: rgba(241, 245, 249, 0.9);
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.dark .sample-chip {
+  background-color: rgba(30, 41, 59, 0.7);
+  color: #cbd5e1;
+  border-color: #334155;
+}
+
+.sample-chip:hover {
+  background-color: #4f46e5;
+  color: #ffffff;
+  border-color: #4f46e5;
+  transform: translateY(-1px);
+}
+
+/* Status pills */
+.status-pill {
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.status-pill.active {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.dark .status-pill.active {
+  background-color: #334155;
+  color: #f8fafc;
+}
+
+/* View switcher pills */
+.view-pill {
+  padding: 0.35rem 0.5rem;
+  border-radius: 0.5rem;
+  color: #64748b;
+  transition: all 0.15s ease;
+}
+
+.view-pill:hover {
+  color: #0f172a;
+}
+
+.dark .view-pill:hover {
+  color: #f8fafc;
+}
+
+.view-pill.active {
+  background-color: #e0e7ff;
+  color: #4338ca;
+}
+
+.dark .view-pill.active {
+  background-color: #312e81;
+  color: #c7d2fe;
+}
+
+/* Category filter pills */
+.cat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background-color: #ffffff;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.dark .cat-pill {
+  background-color: #0f172a;
+  color: #94a3b8;
+  border-color: #1e293b;
+}
+
+.cat-pill:hover {
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+
+.dark .cat-pill:hover {
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+.cat-pill.active {
+  background-color: #4f46e5;
+  color: #ffffff;
+  border-color: #4f46e5;
+  box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+}
+
+.dark .cat-pill.active {
+  background-color: #6366f1;
+  color: #ffffff;
+  border-color: #6366f1;
+}
+
+.cat-count {
+  font-size: 0.65rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 9999px;
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.cat-pill.active .cat-count {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+/* Card hover & micro-interactions */
+.notice-card {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.notice-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+}
+
+/* Calendar styling */
+.calendar-day-cell {
+  min-height: 80px;
+  border-radius: 0.75rem;
+  padding: 0.35rem;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.calendar-day-cell:hover {
+  background-color: rgba(99, 102, 241, 0.05);
+}
+
+.dark .calendar-day-cell:hover {
+  background-color: rgba(99, 102, 241, 0.15);
+}
+
+/* Scrollbar aesthetic */
+.scrollbar-thin::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
